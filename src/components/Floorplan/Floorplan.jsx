@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import uuid from "../../functions/uuid";
+import DataPoint from './DataPoint/DataPoint';
 
 const svgWidth = 960;
 const svgHeight = 500;
@@ -128,11 +129,11 @@ const Floorplan = (props) => {
 
   const dataPointOnMouseDown = (zoneId, index, event) => {
 
+    event.stopPropagation();
+
     const currentZone = data.zones.filter((zone) => {
       return zone.id === zoneId;
-    })
-    const startX = currentZone.points[index].x;
-    const startY = currentZone.points[index].y;
+    })[0];
 
     const onMouseMove = () => {
       const dataWithoutOldZone = data.zones.filter(zone => {
@@ -140,8 +141,8 @@ const Floorplan = (props) => {
       })
 
       const { layerX, layerY } = event.nativeEvent;
-      const newX = layerX - startX;
-      const newY = layerY - startY;
+      const newX = layerX;
+      const newY = layerY;
 
       currentZone.points[index].x = newX;
       currentZone.points[index].y = newY;
@@ -157,15 +158,24 @@ const Floorplan = (props) => {
       setData(newData);
     }
 
-    event.target.addEventListener('mousemove', onMouseMove);
+    const point = event.target;
 
-    addEventListener('mouseup', () => {
-      event.target.removeEventListener('mousemove', onMouseMove);
+    point.addEventListener('mousemove', onMouseMove);
+
+    point.addEventListener('mouseup', () => {
+      point.removeEventListener('mousemove', onMouseMove);
     })
+  }
+  const onCircleDataClick = (event) => {
+    event.stopPropagation();
   }
 
   return (
     <svg
+      style={{
+        backgroundImage: `url("https://static.educalingo.com/img/en/800/floor-plan.jpg")`,
+        backgroundRepeat: 'no-repeat'
+      }}
       width={svgWidth}
       height={svgHeight}
       onClick={handleSvgClick}
@@ -177,22 +187,6 @@ const Floorplan = (props) => {
 
           return (
             <g>
-              {zone.points.map((point, index) => {
-                return (
-                  <circle
-                    cx={point.x}
-                    cy={point.y}
-                    r={4}
-                    style={{
-                      cursor: 'pointer'
-                    }}
-                    draggable="true"
-                    onMouseDown={(event) => {
-                      dataPointOnMouseDown(zone.id, index, event);
-                    }}
-                  />
-                )
-              })}
               <polygon
                 points={strokeOfPoints}
                 stroke="black"
@@ -200,6 +194,18 @@ const Floorplan = (props) => {
                 fill='red'
                 fillOpacity='0.25'
               />
+              {zone.points.map((point, index) => {
+                return (
+                  <DataPoint
+                    index={index}
+                    point={point}
+                    data={data}
+                    setData={setData}
+                    zone={zone}
+                  />
+                )
+              })}
+
             </g>
           )
         })}
