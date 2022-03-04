@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState,memo } from 'react';
 
 const DataPoint = (props) => {
 
-  const { setData, data, index, zone, point } = props;
+  const {
+    setData,
+    data,
+    index,
+    zone,
+    point,
+    mod
+  } = props;
   const [draggable, setDraggable] = useState(false);
 
 
@@ -10,83 +17,82 @@ const DataPoint = (props) => {
     event.stopPropagation();
   }
 
-  const onStartDrag = () => {
-    setDraggable(true);
+  let onStartDrag = () => {
+    return;
   }
 
-  const onStopDrag = () => {
-    setDraggable(false)
+  let onStopDrag = () => {
+    return;
   }
 
-  const onDrag = (zoneId, index, event) => {
+  let onDrag = () => {
+    return;
+  }
 
-    event.stopPropagation();
+  if (mod === "Edit" || mod === "Edit2") {
+    onStartDrag = () => {
+      setDraggable(true);
+    }
+  }
 
-    const currentZone = data.zones.filter((zone) => {
-      return zone.id === zoneId;
-    })[0];
+  if (mod === "Edit") {
 
-    const dataWithoutOldZone = data.zones.filter(zone => {
-      return zone.id !== zoneId;
-    })
+    onDrag = (zoneId, index, event) => {
 
-    const { layerX, layerY } = event.nativeEvent;
-    const newX = layerX;
-    const newY = layerY;
+      event.stopPropagation();
 
-    currentZone.points[index].x = newX;
-    currentZone.points[index].y = newY;
+      const currentZone = data.zones.filter((zone) => {
+        return zone.id === zoneId;
+      })[0];
 
-    const newData = {
-      ...data,
-      zones: [
-        ...dataWithoutOldZone,
-        currentZone
-      ]
+      const dataWithoutOldZone = data.zones.filter(zone => {
+        return zone.id !== zoneId;
+      })
+
+      const { layerX, layerY } = event.nativeEvent;
+      const newX = layerX;
+      const newY = layerY;
+
+      currentZone.points[index].x = newX;
+      currentZone.points[index].y = newY;
+
+      const newData = {
+        ...data,
+        zones: [
+          ...dataWithoutOldZone,
+          currentZone
+        ]
+      }
+
+      setData(newData);
     }
 
-    setData(newData);
+    onStopDrag = () => {
+      setDraggable(false);
+    }
   }
 
-  // const dataPointOnMouseDown = (zoneId, index, event) => {
+  if (mod === 'Edit2') {
 
-  //   event.stopPropagation();
+    //don't work like whant
 
-  //   const currentZone = data.zones.filter((zone) => {
-  //     return zone.id === zoneId;
-  //   })[0];
+    onDrag = (zoneId, index, event) => {
 
-  //   const onMouseMove = () => {
-  //     const dataWithoutOldZone = data.zones.filter(zone => {
-  //       return zone.id !== zoneId;
-  //     })
+      event.stopPropagation();
 
-  //     const { layerX, layerY } = event.nativeEvent;
-  //     const newX = layerX;
-  //     const newY = layerY;
+      const { layerX, layerY } = event.nativeEvent;
+      const newX = layerX;
+      const newY = layerY;
+      const element = event.target;
 
-  //     currentZone.points[index].x = newX;
-  //     currentZone.points[index].y = newY;
+      element.setAttributeNS(null, 'cx', newX);
+      element.setAttributeNS(null, 'cy', newY);
+    }
 
-  //     const newData = {
-  //       ...data,
-  //       zones: [
-  //         ...dataWithoutOldZone,
-  //         currentZone
-  //       ]
-  //     }
-
-  //     setData(newData);
-  //   }
-
-  //   const point = event.target;
-
-  //   point.addEventListener('mousemove', onMouseMove);
-
-  //   point.addEventListener('mouseup', () => {
-  //     point.removeEventListener('mousemove', onMouseMove);
-  //   })
-  // }
+    onStopDrag = () => {
+      setDraggable(false);
+    }
+  }
 
   if (draggable) {
     return (
@@ -95,13 +101,14 @@ const DataPoint = (props) => {
         cy={point.y}
         r={4}
         style={{
-          cursor: 'pointer'
+          cursor: 'grabbing'
         }}
         onMouseMove={(event) => {
           onDrag(zone.id, index, event);
         }}
         onMouseUp={onStopDrag}
         onClick={onCircleDataClick}
+        onMouseOver={onStopDrag}
       />
     )
   }
@@ -112,7 +119,7 @@ const DataPoint = (props) => {
       cy={point.y}
       r={4}
       style={{
-        cursor: 'pointer'
+        cursor: (mod === "Edit" || mod === "Edit2") ? 'grab' : 'default'
       }}
       onMouseDown={onStartDrag}
       onClick={onCircleDataClick}
@@ -120,4 +127,4 @@ const DataPoint = (props) => {
   );
 }
 
-export default DataPoint;
+export default memo(DataPoint);

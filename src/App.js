@@ -1,15 +1,22 @@
 import './App.css';
 import Floorplan from './components/Floorplan/Floorplan.jsx';
+import Header from './components/Header/Header';
+import React, {useState} from 'react';
 
 function App() {
+
+  const [mod, setMod] = useState("Create");
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <div>LaLa</div>
-        <div>LaLa</div>
-      </header>
+      <Header
+        mod={mod}
+        setMod={setMod}
+      />
       <main>
-        <Floorplan/>
+        <Floorplan
+          mod={mod}
+        />
       </main>
     </div>
   );
