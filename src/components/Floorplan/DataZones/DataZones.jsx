@@ -1,40 +1,21 @@
-import React,{memo} from 'react';
-import makeStrokeOfPoints from '../../../functions/makeStrokeOfpoints';
-import DataPoint from '../DataPoint/DataPoint';
+import React, { memo } from 'react';
+import DataZone from './DataZone/DataZone';
 
 const DataZones = (props) => {
 
-  const {data,setData, mod} = props;
+  const { data, setData, mod } = props;
 
   return (
     <g>
       {data.zones.map((zone) => {
-
-        const strokeOfPoints = makeStrokeOfPoints(zone.points);
-
         return (
-          <g key={zone.id}>
-            <polygon
-              points={strokeOfPoints}
-              stroke="black"
-              strokeWidth='2'
-              fill='red'
-              fillOpacity='0.25'
-            />
-            {zone.points.map((point, index) => {
-              return (
-                <DataPoint
-                  key={point.id}
-                  index={index}
-                  point={point}
-                  data={data}
-                  setData={setData}
-                  zone={zone}
-                  mod={mod}
-                />
-              )
-            })}
-          </g>
+          <DataZone
+            key={zone.id}
+            data={data}
+            setData={setData}
+            mod={mod}
+            zone={zone}
+          />
         )
       })}
     </g>

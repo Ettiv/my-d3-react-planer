@@ -17,6 +17,10 @@ const Header = (props) => {
     setMod('Edit2');
   }
 
+  const onEdit3Click = () => {
+    setMod('Edit3');
+  }
+
   const onNoneClick = () => {
     setMod('None')
   }
@@ -40,6 +44,12 @@ const Header = (props) => {
         onClick={onEdit2Click}  
       >
         Edit v.2 
+      </button>
+      <button 
+        className={`header-button ${mod === 'Edit3' ? 'active' : ''}`}
+        onClick={onEdit3Click}  
+      >
+        Edit v.3 
       </button>
       <button 
         className={`header-button ${mod === 'None' ? 'active' : ''}`}

@@ -1,4 +1,4 @@
-import React, { useState,memo } from 'react';
+import React, { useState, memo } from 'react';
 
 const DataPoint = (props) => {
 
@@ -29,13 +29,13 @@ const DataPoint = (props) => {
     return;
   }
 
-  if (mod === "Edit" || mod === "Edit2") {
+  if (mod === "Edit" || mod === "Edit2" || mod === "Edit3") {
     onStartDrag = () => {
       setDraggable(true);
     }
   }
 
-  if (mod === "Edit") {
+  if (mod === "Edit" || mod === "Edit3") {
 
     onDrag = (zoneId, index, event) => {
 
@@ -94,6 +94,39 @@ const DataPoint = (props) => {
     }
   }
 
+  if (draggable && mod === "Edit3") {
+    return (
+      <g>
+        <circle
+          cx={point.x}
+          cy={point.y}
+          r={4}
+          style={{
+            cursor: 'grabbing'
+          }}
+          onMouseUp={onStopDrag}
+          onClick={onCircleDataClick}
+        />
+        <circle
+          cx={point.x}
+          cy={point.y}
+          r={50}
+          fillOpacity='0'
+          stroke='none'
+          style={{
+            cursor: 'grabbing'
+          }}
+          onMouseMove={(event) => {
+            onDrag(zone.id, index, event);
+          }}
+          onMouseUp={onStopDrag}
+          onClick={onCircleDataClick}
+          onMouseOut={onStopDrag}
+        />
+      </g>
+    )
+  }
+
   if (draggable) {
     return (
       <circle
@@ -108,7 +141,7 @@ const DataPoint = (props) => {
         }}
         onMouseUp={onStopDrag}
         onClick={onCircleDataClick}
-        onMouseOver={onStopDrag}
+        onMouseOut={onStopDrag}
       />
     )
   }
@@ -119,7 +152,7 @@ const DataPoint = (props) => {
       cy={point.y}
       r={4}
       style={{
-        cursor: (mod === "Edit" || mod === "Edit2") ? 'grab' : 'default'
+        cursor: (mod === "Edit" || mod === "Edit2" || mod === "Edit3") ? 'grab' : 'default'
       }}
       onMouseDown={onStartDrag}
       onClick={onCircleDataClick}
