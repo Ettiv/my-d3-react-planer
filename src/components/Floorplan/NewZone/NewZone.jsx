@@ -1,6 +1,7 @@
-import React,{memo,useCallback} from 'react';
+import React, { memo, useCallback } from 'react';
 import uuid from '../../../functions/uuid';
 import makeStrokeOfPoints from '../../../functions/makeStrokeOfpoints';
+import NewZonePoint from '../NewZonePoint/NewZonePoint';
 
 const NewZone = (props) => {
 
@@ -19,7 +20,7 @@ const NewZone = (props) => {
       firstPoint: null,
       points: [],
     })
-  },[])
+  }, [])
 
   let handleCircleClick = () => {
     return;
@@ -61,17 +62,17 @@ const NewZone = (props) => {
         stroke="black"
         strokeWidth='2'
       />
-      {newZone.points.map((point) => {
+      {newZone.points.map((point, index) => {
         return (
-          <circle
+          <NewZonePoint
             key={point.id}
-            cx={point.x}
-            cy={point.y}
-            r={4}
-            onClick={handleCircleClick}
-            style={{
-              cursor: 'pointer'
-            }}
+            index={index}
+            point={point}
+            mod={mod}
+            newZone={newZone}
+            setData={setData}
+            data={data}
+            createNewEmptyZone={createNewEmptyZone}
           />
         )
       })}

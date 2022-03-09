@@ -1,20 +1,26 @@
-import React, { useState, memo } from "react";
+import React, { useState, memo, useEffect } from "react";
 import uuid from "../../functions/uuid";
 import NewZone from "./NewZone/NewZone";
 import DataZones from "./DataZones/DataZones";
 import ContextMenu from "./ContextMenu/ContextMenu";
-
-const svgWidth = 960;
-const svgHeight = 500;
+import Header from "../Header/Header";
 
 const Floorplan = (props) => {
 
-  const { mod } = props;
+  const [mod, setMod] = useState("Create");
+
+  const floorId = '27f8324d-bdcc-4757-983c-df09d505229d';
+
+  const [svgSize, setSvgSize] = useState({
+    width: 0,
+    height: 0
+  });
 
   const [data, setData] = useState(
     {
       id: uuid(),
       name: "floor 1",
+      floorPlanUrl: 'https://static.educalingo.com/img/en/800/floor-plan.jpg',
       zones: [
         {
           id: uuid(),
@@ -71,6 +77,26 @@ const Floorplan = (props) => {
     })
   }
 
+  useEffect(()=>{
+    const jsonData = JSON.parse(localStorage.getItem(floorId));
+    setData(jsonData);
+  }, []);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      setSvgSize({
+        width: img.width,
+        height: img.height
+      })
+    }
+    img.onerror = () => {
+      console.error('Invalid url')
+    }
+    img.src = data.floorPlanUrl;
+  }, [data.floorPlanUrl]);
+
+
   let handleSvgClick = () => {
     return;
   }
@@ -113,7 +139,7 @@ const Floorplan = (props) => {
     }
   }
 
-  if(mod === "Edit" || mod === "Edit2" || mod === "Edit3"){
+  if (mod === "Edit" || mod === "Edit2" || mod === "Edit3") {
     handleSvgClick = () => {
       closeContextMenu();
     }
@@ -121,42 +147,51 @@ const Floorplan = (props) => {
 
   return (
     <div>
-      <ContextMenu
-        show={contextMenuProperties.show}
-        x={contextMenuProperties.x}
-        y={contextMenuProperties.y}
-        zoneName={currentHoveredZone?.name}
-        setData={setData}
-        currentHoveredZone={currentHoveredZone}
+      <Header
+        mod={mod}
+        setMod={setMod}
         data={data}
-        closeContextMenu={closeContextMenu}
       />
-      <svg
-        style={{
-          backgroundImage: `url("https://static.educalingo.com/img/en/800/floor-plan.jpg")`,
-          backgroundRepeat: 'no-repeat'
-        }}
-        width={svgWidth}
-        height={svgHeight}
-        onClick={handleSvgClick}
-      >
-        <g>
-          <DataZones
-            data={data}
-            setData={setData}
-            mod={mod}
-            setCurrentHoveredZone={setCurrentHoveredZone}
-            openContextMenu={openContextMenu}
-          />
-          <NewZone
-            newZone={newZone}
-            data={data}
-            setData={setData}
-            setNewZone={setNewZone}
-            mod={mod}
-          />
-        </g>
-      </svg>
+      <main>
+        <ContextMenu
+          show={contextMenuProperties.show}
+          x={contextMenuProperties.x}
+          y={contextMenuProperties.y}
+          zoneName={currentHoveredZone?.name}
+          setData={setData}
+          currentHoveredZone={currentHoveredZone}
+          data={data}
+          closeContextMenu={closeContextMenu}
+        />
+        <svg
+          style={{
+            backgroundImage: `url("${data.floorPlanUrl}")`,
+            backgroundRepeat: 'no-repeat',
+            border: '2px solid black',
+            margin: '5px'
+          }}
+          width={svgSize.width}
+          height={svgSize.height}
+          onClick={handleSvgClick}
+        >
+          <g>
+            <DataZones
+              data={data}
+              setData={setData}
+              mod={mod}
+              setCurrentHoveredZone={setCurrentHoveredZone}
+              openContextMenu={openContextMenu}
+            />
+            <NewZone
+              newZone={newZone}
+              data={data}
+              setData={setData}
+              setNewZone={setNewZone}
+              mod={mod}
+            />
+          </g>
+        </svg>
+      </main>
     </div>
   )
 }

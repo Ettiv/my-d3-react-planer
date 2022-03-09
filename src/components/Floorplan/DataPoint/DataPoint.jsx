@@ -10,6 +10,7 @@ const DataPoint = (props) => {
     point,
     mod
   } = props;
+  
   const [draggable, setDraggable] = useState(false);
 
 
@@ -32,6 +33,10 @@ const DataPoint = (props) => {
   if (mod === "Edit" || mod === "Edit2" || mod === "Edit3") {
     onStartDrag = () => {
       setDraggable(true);
+    }
+
+    onStopDrag = () => {
+      setDraggable(false);
     }
   }
 
@@ -66,10 +71,6 @@ const DataPoint = (props) => {
 
       setData(newData);
     }
-
-    onStopDrag = () => {
-      setDraggable(false);
-    }
   }
 
   if (mod === 'Edit2') {
@@ -87,10 +88,6 @@ const DataPoint = (props) => {
 
       element.setAttributeNS(null, 'cx', newX);
       element.setAttributeNS(null, 'cy', newY);
-    }
-
-    onStopDrag = () => {
-      setDraggable(false);
     }
   }
 
