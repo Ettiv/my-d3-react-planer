@@ -1,0 +1,38 @@
+.context-menu-wraper{
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  list-style: none;
+  border: 2px solid black;
+  border-radius: 8px;
+  display: none;
+  background-color: white;
+}
+
+.context-menu-wraper.active{
+  display: block;
+  background-color: white;
+}
+
+.context-menu-zone-name{
+  width: 100%;
+  height: 25px;
+  border-bottom: #000000 2px solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.context-menu-delete-button-wraper{
+  width: 100%;
+  height: 25px;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+/* .context-menu-delete-button{
+} */

@@ -3,7 +3,17 @@ import DataZone from './DataZone/DataZone';
 
 const DataZones = (props) => {
 
-  const { data, setData, mod } = props;
+  const { 
+    data, 
+    setData, 
+    mod, 
+    setCurrentHoveredZone,
+    openContextMenu 
+  } = props;
+
+  const onHoverZone = (zone) => {
+    setCurrentHoveredZone(zone)
+  }
 
   return (
     <g>
@@ -15,6 +25,8 @@ const DataZones = (props) => {
             setData={setData}
             mod={mod}
             zone={zone}
+            onHoverZone={onHoverZone}
+            openContextMenu={openContextMenu}
           />
         )
       })}
