@@ -11,19 +11,22 @@ const ContextMenu = (props) => {
     currentHoveredZone,
     x,
     y,
-    closeContextMenu
+    closeContextMenu,
+    sendNewData
   } = props;
 
   const onDeleteClick = () => {
     const newDataZones = data.zones.filter((zone) => {
       return zone.id !== currentHoveredZone.id;
     })
-    setData({
+    const newData = {
       ...data,
       zones: [
         ...newDataZones
       ]
-    })
+    }
+    setData(newData);
+    sendNewData(newData);
     closeContextMenu();
   }
 

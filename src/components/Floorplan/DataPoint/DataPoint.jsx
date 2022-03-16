@@ -8,7 +8,8 @@ const DataPoint = (props) => {
     index,
     zone,
     point,
-    mod
+    mod,
+    sendNewData
   } = props;
   
   const [draggable, setDraggable] = useState(false);
@@ -37,6 +38,7 @@ const DataPoint = (props) => {
 
     onStopDrag = () => {
       setDraggable(false);
+      sendNewData(data);
     }
   }
 

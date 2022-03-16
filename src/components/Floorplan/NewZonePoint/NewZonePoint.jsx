@@ -1,4 +1,3 @@
-import { color } from 'd3';
 import React from 'react';
 
 const NewZonePoint = (props) => {
@@ -10,19 +9,20 @@ const NewZonePoint = (props) => {
     newZone,
     setData,
     data,
-    createNewEmptyZone
+    createNewEmptyZone,
+    sendNewData
   } = props;
 
   //color of point
   let pointColor = 'black';
 
   //color of last point
-  if(newZone.points.length === index + 1){
+  if (newZone.points.length === index + 1) {
     pointColor = 'green'
   }
 
   //color of first point
-  if(index === 0){
+  if (index === 0) {
     pointColor = 'red'
   }
 
@@ -46,13 +46,16 @@ const NewZonePoint = (props) => {
 
       if (pointX === firstPointX && pointY === firstPointY) {
 
-        setData({
+        const newData = {
           ...data,
           zones: [
             ...data.zones,
             newZone
           ]
-        })
+        }
+
+        setData(newData);
+        sendNewData(newData);
         createNewEmptyZone();
       }
     }

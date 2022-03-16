@@ -10,49 +10,21 @@ const NewZone = (props) => {
     newZone,
     setData,
     data,
-    mod
+    mod,
+    sendNewData,
+    sendNewZone
   } = props;
 
   const createNewEmptyZone = useCallback(() => {
-    setNewZone({
+    const newEmptyZone = {
       id: uuid(),
       name: 'zone ' + uuid(),
       firstPoint: null,
       points: [],
-    })
-  }, [])
-
-  let handleCircleClick = () => {
-    return;
-  }
-
-  if (mod === "Create") {
-    handleCircleClick = (event) => {
-
-      event.stopPropagation();
-
-      if (newZone.points.length < 3) {
-        return;
-      }
-
-      const pointX = +event.target.attributes.cx.value;
-      const pointY = +event.target.attributes.cy.value;
-      const firstPointX = +newZone.firstPoint.x;
-      const firstPointY = +newZone.firstPoint.y;
-
-      if (pointX === firstPointX && pointY === firstPointY) {
-
-        setData({
-          ...data,
-          zones: [
-            ...data.zones,
-            newZone
-          ]
-        })
-        createNewEmptyZone();
-      }
     }
-  }
+    setNewZone(newEmptyZone);
+    sendNewZone(newEmptyZone);
+  }, [setNewZone]);
 
   return (
     <g>
@@ -65,6 +37,7 @@ const NewZone = (props) => {
       {newZone.points.map((point, index) => {
         return (
           <NewZonePoint
+            sendNewData={sendNewData}
             key={point.id}
             index={index}
             point={point}

@@ -8,11 +8,12 @@ const DataZones = (props) => {
     setData, 
     mod, 
     setCurrentHoveredZone,
-    openContextMenu 
+    openContextMenu,
+    sendNewData
   } = props;
 
   const onHoverZone = (zone) => {
-    setCurrentHoveredZone(zone)
+    setCurrentHoveredZone(zone);
   }
 
   return (
@@ -20,6 +21,7 @@ const DataZones = (props) => {
       {data.zones.map((zone) => {
         return (
           <DataZone
+            sendNewData={sendNewData}
             key={zone.id}
             data={data}
             setData={setData}

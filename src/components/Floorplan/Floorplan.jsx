@@ -1,13 +1,23 @@
-import React, { useState, memo, useEffect } from "react";
+import React, { useState, memo, useEffect, useRef, useMemo } from "react";
 import uuid from "../../functions/uuid";
 import NewZone from "./NewZone/NewZone";
 import DataZones from "./DataZones/DataZones";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import Header from "../Header/Header";
+import "./Floorplan.css";
 
 const Floorplan = (props) => {
 
   const [mod, setMod] = useState("Create");
+  const userId = useMemo(() => {
+    return uuid();
+  }, []);
+
+
+  const [conected, setConected] = useState(false);
+  const webSocket = useRef();
+
+  const [username, setUsername] = useState('user ' + uuid());
 
   const floorId = '27f8324d-bdcc-4757-983c-df09d505229d';
 
@@ -77,7 +87,7 @@ const Floorplan = (props) => {
     })
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const jsonData = JSON.parse(localStorage.getItem(floorId));
     setData(jsonData);
   }, []);
@@ -96,6 +106,25 @@ const Floorplan = (props) => {
     img.src = data.floorPlanUrl;
   }, [data.floorPlanUrl]);
 
+  const sendNewZone = (newZone) => {
+    let message = {
+      event: 'new_zone_update',
+      newZone: newZone,
+      userId: userId
+    }
+    message = JSON.stringify(message);
+    webSocket.current.send(message);
+  }
+
+  const sendNewData = (newData) => {
+    let message = {
+      event: 'zones_update',
+      data: newData,
+      userId: userId
+    }
+    message = JSON.stringify(message);
+    webSocket.current.send(message);
+  }
 
   let handleSvgClick = () => {
     return;
@@ -105,9 +134,10 @@ const Floorplan = (props) => {
     handleSvgClick = (event) => {
 
       const { layerX, layerY } = event.nativeEvent;
+      let newZoneToSend;
 
       if (newZone.firstPoint === null) {
-        setNewZone({
+        newZoneToSend = {
           ...newZone,
           firstPoint: {
             id: uuid(),
@@ -122,9 +152,10 @@ const Floorplan = (props) => {
               y: layerY
             }
           ]
-        })
+        }
+        setNewZone(newZoneToSend);
       } else {
-        setNewZone({
+        newZoneToSend = {
           ...newZone,
           points: [
             ...newZone.points,
@@ -134,8 +165,52 @@ const Floorplan = (props) => {
               y: layerY
             }
           ]
-        })
+        }
+        setNewZone(newZoneToSend);
       }
+      sendNewZone(newZoneToSend);
+    }
+  }
+
+  const onConectClick = () => {
+    webSocket.current = new WebSocket('ws://localhost:5000');
+
+    webSocket.current.onopen = () => {
+      setConected(true);
+      let message = {
+        event: 'connection',
+        username: username,
+        userId: userId
+      }
+      message = JSON.stringify(message);
+      webSocket.current.send(message);
+      console.log('Conection success');
+    }
+
+    webSocket.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      switch (message.event) {
+        case 'connection':
+          console.log(message.username + ' conected');
+          break;
+        case 'zones_update':
+          setData(message.data);
+          break;
+        case 'new_zone_update':
+          setNewZone(message.newZone);
+          break;
+        default:
+          console.log(message);
+          console.warn('Unknown event type of message');
+      }
+    }
+
+    webSocket.current.onclose = () => {
+      console.log('Conection ended');
+    }
+
+    webSocket.current.onerror = () => {
+      console.error('Error conect to server');
     }
   }
 
@@ -143,6 +218,29 @@ const Floorplan = (props) => {
     handleSvgClick = () => {
       closeContextMenu();
     }
+  }
+
+  if (!conected) {
+    return (
+      <div className="connection-wraper">
+        <div className="connection-form">
+          <input
+            className="connection-input"
+            type="text"
+            value={username}
+            onChange={(event) => {
+              setUsername(event.target.value);
+            }}
+          />
+          <button
+            className="connection-button"
+            onClick={onConectClick}
+          >
+            Connect
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -154,6 +252,7 @@ const Floorplan = (props) => {
       />
       <main>
         <ContextMenu
+          sendNewData={sendNewData}
           show={contextMenuProperties.show}
           x={contextMenuProperties.x}
           y={contextMenuProperties.y}
@@ -176,6 +275,7 @@ const Floorplan = (props) => {
         >
           <g>
             <DataZones
+              sendNewData={sendNewData}
               data={data}
               setData={setData}
               mod={mod}
@@ -183,6 +283,8 @@ const Floorplan = (props) => {
               openContextMenu={openContextMenu}
             />
             <NewZone
+              sendNewData={sendNewData}
+              sendNewZone={sendNewZone}
               newZone={newZone}
               data={data}
               setData={setData}

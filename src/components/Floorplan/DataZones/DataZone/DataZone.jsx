@@ -10,7 +10,8 @@ const DataZone = (props) => {
     setData,
     mod,
     onHoverZone,
-    openContextMenu
+    openContextMenu,
+    sendNewData
   } = props;
 
   const [draggable, setDraggable] = useState(false);
@@ -63,6 +64,7 @@ const DataZone = (props) => {
     }
 
     onStopDrag = () => {
+      sendNewData(data);
       setDraggable(false);
     }
 
@@ -141,6 +143,7 @@ const DataZone = (props) => {
           return (
             <DataPoint
               key={point.id}
+              sendNewData={sendNewData}
               index={index}
               point={point}
               data={data}
@@ -175,6 +178,7 @@ const DataZone = (props) => {
         return (
           <DataPoint
             key={point.id}
+            sendNewData={sendNewData}
             index={index}
             point={point}
             data={data}
