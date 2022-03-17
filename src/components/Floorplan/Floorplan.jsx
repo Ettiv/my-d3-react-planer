@@ -5,8 +5,15 @@ import DataZones from "./DataZones/DataZones";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import Header from "../Header/Header";
 import "./Floorplan.css";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 const Floorplan = (props) => {
+
+  const {allFloorId, setFloorId} = props;
+
+  const [loading, setLoading] = useState(false);
+
+  const {floorId} = useParams();
 
   const [mod, setMod] = useState("Create");
   const userId = useMemo(() => {
@@ -19,7 +26,7 @@ const Floorplan = (props) => {
 
   const [username, setUsername] = useState('user ' + uuid());
 
-  const floorId = '27f8324d-bdcc-4757-983c-df09d505229d';
+  //const floorId = '27f8324d-bdcc-4757-983c-df09d505229d';
 
   const [svgSize, setSvgSize] = useState({
     width: 0,
@@ -87,10 +94,11 @@ const Floorplan = (props) => {
     })
   }
 
-  useEffect(() => {
-    const jsonData = JSON.parse(localStorage.getItem(floorId));
-    setData(jsonData);
-  }, []);
+  //Old save lockal storage
+  // useEffect(() => {
+  //   const jsonData = JSON.parse(localStorage.getItem(floorId));
+  //   setData(jsonData);
+  // }, []);
 
   useEffect(() => {
     const img = new Image();
@@ -110,7 +118,8 @@ const Floorplan = (props) => {
     let message = {
       event: 'new_zone_update',
       newZone: newZone,
-      userId: userId
+      userId: userId,
+      floorId: floorId
     }
     message = JSON.stringify(message);
     webSocket.current.send(message);
@@ -120,7 +129,8 @@ const Floorplan = (props) => {
     let message = {
       event: 'zones_update',
       data: newData,
-      userId: userId
+      userId: userId,
+      floorId: floorId
     }
     message = JSON.stringify(message);
     webSocket.current.send(message);
@@ -173,6 +183,7 @@ const Floorplan = (props) => {
   }
 
   const onConectClick = () => {
+    setLoading(true);
     webSocket.current = new WebSocket('ws://localhost:5000');
 
     webSocket.current.onopen = () => {
@@ -180,7 +191,8 @@ const Floorplan = (props) => {
       let message = {
         event: 'connection',
         username: username,
-        userId: userId
+        userId: userId,
+        floorId: floorId
       }
       message = JSON.stringify(message);
       webSocket.current.send(message);
@@ -192,6 +204,11 @@ const Floorplan = (props) => {
       switch (message.event) {
         case 'connection':
           console.log(message.username + ' conected');
+          if(message.userId === userId){
+            setData(message.floor);
+            setNewZone(message.floor.newZone);
+            setLoading(false);
+          }
           break;
         case 'zones_update':
           setData(message.data);
@@ -243,12 +260,23 @@ const Floorplan = (props) => {
     )
   }
 
+  if(loading) {
+    return(
+      <div className="loading">
+        Loading...
+      </div>
+    )
+  }
+
   return (
     <div>
       <Header
         mod={mod}
         setMod={setMod}
         data={data}
+        allFloorId={allFloorId}
+        setFloorId={setFloorId}
+        floorId={floorId}
       />
       <main>
         <ContextMenu

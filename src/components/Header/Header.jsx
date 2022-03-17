@@ -1,14 +1,16 @@
 import React from 'react';
 import "./Header.css";
+import CustomSelector from '../CustormComponents/CustomSelect/CustomSelect';
 
 const Header = (props) => {
 
-  const { mod, setMod, data } = props;
+  const { mod, setMod, setFloorId, allFloorId, floorId } = props;
 
-  const onSaveClick = () => {
-    const jsonData = JSON.stringify(data);
-    localStorage.setItem(data.id, jsonData);
-  }
+  //Old save lockal storage
+  // const onSaveClick = () => {
+  //   const jsonData = JSON.stringify(data);
+  //   localStorage.setItem(data.id, jsonData);
+  // }
 
   const onCreateClick = () => {
     setMod('Create');
@@ -28,6 +30,10 @@ const Header = (props) => {
 
   const onNoneClick = () => {
     setMod('None')
+  }
+
+  const onChangeFloorSelect = (event) => {
+    setFloorId(event.target.value);
   }
 
   return (
@@ -65,12 +71,19 @@ const Header = (props) => {
         </button>
       </div>
       <div className='control-buttons'>
-        <button
+        <CustomSelector
+          options={allFloorId}
+          name="floorIdSelect"
+          id="floorIdSelect"
+          defaultValue={floorId}
+          onChange={onChangeFloorSelect}
+        />
+        {/* <button
           className={`header-button`}
           onClick={onSaveClick}
         >
           Save
-        </button>
+        </button> */}
       </div>
     </header>
   );
