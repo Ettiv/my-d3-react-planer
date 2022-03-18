@@ -94,6 +94,13 @@ const Floorplan = (props) => {
     })
   }
 
+  // useEffect(()=>{
+  //   return () => {
+  //     webSocket.current.close();
+  //   }
+  // }, []);
+  
+
   //Old save lockal storage
   // useEffect(() => {
   //   const jsonData = JSON.parse(localStorage.getItem(floorId));
@@ -180,6 +187,10 @@ const Floorplan = (props) => {
       }
       sendNewZone(newZoneToSend);
     }
+  }
+
+  const onCloseWebSocket = () => {
+    webSocket.current.close();
   }
 
   const onConectClick = () => {
@@ -277,6 +288,7 @@ const Floorplan = (props) => {
         allFloorId={allFloorId}
         setFloorId={setFloorId}
         floorId={floorId}
+        onCloseWebSocket={onCloseWebSocket}
       />
       <main>
         <ContextMenu

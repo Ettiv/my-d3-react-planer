@@ -4,7 +4,7 @@ import CustomSelector from '../CustormComponents/CustomSelect/CustomSelect';
 
 const Header = (props) => {
 
-  const { mod, setMod, setFloorId, allFloorId, floorId } = props;
+  const { mod, setMod, setFloorId, allFloorId, floorId,onCloseWebSocket } = props;
 
   //Old save lockal storage
   // const onSaveClick = () => {
@@ -33,6 +33,7 @@ const Header = (props) => {
   }
 
   const onChangeFloorSelect = (event) => {
+    onCloseWebSocket();
     setFloorId(event.target.value);
   }
 

@@ -40,6 +40,7 @@ function App() {
         <Switch>
           <Route path="/floor/:floorId" exact>
             <Floorplan
+              key={floorId}
               setFloorId={setFloorId}
               allFloorId={allFloorId}
             />
